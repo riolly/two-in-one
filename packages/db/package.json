@@ -38,8 +38,10 @@
     "@acme/eslint-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
+    "@types/pg": "^8.16.0",
     "drizzle-kit": "^0.31.5",
     "eslint": "catalog:",
+    "pg": "^8.16.3",
     "prettier": "catalog:",
     "typescript": "catalog:"
   },

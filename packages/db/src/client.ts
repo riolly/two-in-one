@@ -1,10 +1,5 @@
-import { sql } from "@vercel/postgres";
-import { drizzle } from "drizzle-orm/vercel-postgres";
+const isDevelopment = process.env.NODE_ENV !== "production";
 
-import * as schema from "./schema";
-
-export const db = drizzle({
-  client: sql,
-  schema,
-  casing: "snake_case",
-});
+export const { db } = isDevelopment
+  ? await import("./client-dev")
+  : await import("./client-prod");
