@@ -14,7 +14,7 @@ export function AuthShowcase() {
         size="lg"
         onClick={async () => {
           const res = await authClient.signIn.social({
-            provider: "discord",
+            provider: "google",
             callbackURL: "/",
           });
           if (!res.data?.url) {
@@ -23,7 +23,7 @@ export function AuthShowcase() {
           await navigate({ href: res.data.url, replace: true });
         }}
       >
-        Sign in with Discord
+        Sign in with Google
       </Button>
     );
   }
