@@ -17,6 +17,19 @@ export function initAuth<
   googleClientSecret: string;
   extraPlugins?: TExtraPlugins;
 }) {
+  // Only use OAuth proxy when baseUrl differs from productionUrl
+  // The proxy is needed for preview deployments and local development
+  const shouldUseProxy = options.baseUrl !== options.productionUrl;
+
+  // Log configuration for debugging
+  if (shouldUseProxy) {
+    console.log("[Better Auth OAuth Proxy]", {
+      baseUrl: options.baseUrl,
+      productionUrl: options.productionUrl,
+      redirectURI: `${options.productionUrl}/api/auth/callback/google`,
+    });
+  }
+
   const config = {
     database: drizzleAdapter(db, {
       provider: "pg",
@@ -24,10 +37,14 @@ export function initAuth<
     baseURL: options.baseUrl,
     secret: options.secret,
     plugins: [
-      oAuthProxy({
-        productionURL: options.productionUrl,
-        currentURL: options.baseUrl,
-      }),
+      ...(shouldUseProxy
+        ? [
+            oAuthProxy({
+              productionURL: options.productionUrl,
+              currentURL: options.baseUrl,
+            }),
+          ]
+        : []),
       expo(),
       ...(options.extraPlugins ?? []),
     ],
@@ -35,13 +52,21 @@ export function initAuth<
       google: {
         clientId: options.googleClientId,
         clientSecret: options.googleClientSecret,
-        redirectURI: `${options.productionUrl}/api/auth/callback/google`,
+        redirectURI: shouldUseProxy
+          ? `${options.productionUrl}/api/auth/callback/google`
+          : `${options.baseUrl}/api/auth/callback/google`,
       },
     },
     trustedOrigins: ["expo://"],
     onAPIError: {
       onError(error, ctx) {
-        console.error("BETTER AUTH API ERROR", error, ctx);
+        console.error("BETTER AUTH API ERROR", {
+          error,
+          ctx,
+          baseURL: options.baseUrl,
+          productionURL: options.productionUrl,
+          shouldUseProxy,
+        });
       },
     },
   } satisfies BetterAuthOptions;
