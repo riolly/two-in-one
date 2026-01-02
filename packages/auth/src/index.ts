@@ -26,6 +26,7 @@ export function initAuth<
     plugins: [
       oAuthProxy({
         productionURL: options.productionUrl,
+        currentURL: options.baseUrl,
       }),
       expo(),
       ...(options.extraPlugins ?? []),
