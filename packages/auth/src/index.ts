@@ -17,6 +17,9 @@ export function initAuth<
   googleClientSecret: string;
   extraPlugins?: TExtraPlugins;
 }) {
+  // OAuth proxy is used when baseUrl differs from productionUrl (preview/local dev)
+  const isUsingProxy = options.baseUrl !== options.productionUrl;
+
   const config = {
     database: drizzleAdapter(db, {
       provider: "pg",
@@ -47,6 +50,13 @@ export function initAuth<
         });
       },
     },
+    // Only skip state cookie check when using OAuth proxy (preview/local dev)
+    // The proxy uses encrypted URL parameters instead of cookies for state
+    ...(isUsingProxy && {
+      account: {
+        skipStateCookieCheck: true,
+      },
+    }),
   } satisfies BetterAuthOptions;
 
   return betterAuth(config);
