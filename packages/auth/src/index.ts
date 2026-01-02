@@ -17,6 +17,11 @@ export function initAuth<
   googleClientSecret: string;
   extraPlugins?: TExtraPlugins;
 }) {
+  const redirectURI =
+    process.env.VERCEL_ENV === "preview"
+      ? "https://twoasone-preview.vercel.app/api/auth/callback/google"
+      : undefined;
+
   const config = {
     database: drizzleAdapter(db, {
       provider: "pg",
@@ -35,10 +40,7 @@ export function initAuth<
       google: {
         clientId: options.googleClientId,
         clientSecret: options.googleClientSecret,
-        redirectURI:
-          process.env.VERCEL_ENV === "preview"
-            ? "https://twoasone-preview.vercel.app"
-            : undefined,
+        redirectURI,
       },
     },
     trustedOrigins: ["expo://"],
