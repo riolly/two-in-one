@@ -26,6 +26,7 @@ export function initAuth<
     plugins: [
       oAuthProxy({
         productionURL: options.productionUrl,
+        currentURL: options.baseUrl,
       }),
       expo(),
       ...(options.extraPlugins ?? []),
@@ -34,12 +35,16 @@ export function initAuth<
       google: {
         clientId: options.googleClientId,
         clientSecret: options.googleClientSecret,
+        redirectURI: `${options.productionUrl}/api/auth/callback/google`,
       },
     },
     trustedOrigins: ["expo://"],
     onAPIError: {
       onError(error, ctx) {
-        console.error("BETTER AUTH API ERROR", error, ctx);
+        console.error("BETTER AUTH API ERROR", {
+          error,
+          ctx,
+        });
       },
     },
   } satisfies BetterAuthOptions;
