@@ -35,7 +35,10 @@ export function initAuth<
       google: {
         clientId: options.googleClientId,
         clientSecret: options.googleClientSecret,
-        redirectURI: `${options.productionUrl}/api/auth/callback/google`,
+        redirectURI:
+          process.env.VERCEL_ENV === "preview"
+            ? "https://twoasone-preview.vercel.app"
+            : undefined,
       },
     },
     trustedOrigins: ["expo://"],
